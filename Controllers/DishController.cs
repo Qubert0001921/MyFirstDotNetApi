@@ -40,5 +40,12 @@ namespace FirstAPI.Controllers
             int id = _dishService.CreateDish(dto, restaurantId);
             return Created($"/api/restaurant/{restaurantId}/dish/{id}", null);
         }
+
+        [HttpPut("{id}")]
+        public ActionResult Update([FromRoute] int dishId, [FromRoute] int restaurantId, [FromBody] CreateDishDto dto)
+        {
+            _dishService.Update(dto, restaurantId, dishId);
+            return Ok();
+        }
     }
 }

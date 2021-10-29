@@ -12,7 +12,7 @@ namespace FirstAPI.Entities
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Dish> Dishes { get; set; }
 
-        private string _connectionString = "Data Source=DESKTOP-BHF858D;Initial Catalog=RestaurantDb;Integrated Security=True;";
+        private string _connectionString = "server=localhost;user=root;database=restautantdb;password=passwordkajo;port=3306";
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -38,7 +38,7 @@ namespace FirstAPI.Entities
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(_connectionString);
+            optionsBuilder.UseMySQL(_connectionString);
         }
 
     }

@@ -15,6 +15,7 @@ namespace FirstAPI.Services
         DishDto GetById(int id, int restaurantId);
         IEnumerable<DishDto> GetAll(int restauratnId);
         int CreateDish(CreateDishDto dto, int restaurantId);
+        void Update(CreateDishDto dto, int restaurantId, int dishId);
     }
 
     public class DishService : IDishService
@@ -58,6 +59,20 @@ namespace FirstAPI.Services
             DishDto dto = _mapper.Map<DishDto>(dish);
 
             return dto;
+        }
+
+        public void Update(CreateDishDto dto, int restaurantId, int dishId)
+        {
+            var dish = _dbContext.Dishes.FirstOrDefault(r => r.Id == dishId);
+
+            if (dish is null)
+                throw new NotFoundException("dish not found");
+
+            dish.Name = dto.Name;
+            dish.Description = dto.Description;
+            dish.Price = dto.Price;
+
+            _dbContext.SaveChanges();
         }
 
         private Restaurant GetRestaurantById(int id)
