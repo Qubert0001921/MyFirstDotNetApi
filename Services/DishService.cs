@@ -16,6 +16,7 @@ namespace FirstAPI.Services
         IEnumerable<DishDto> GetAll(int restauratnId);
         int CreateDish(CreateDishDto dto, int restaurantId);
         void Update(CreateDishDto dto, int restaurantId, int dishId);
+        void Delete(int dishId, int restaurantId);
     }
 
     public class DishService : IDishService
@@ -42,9 +43,27 @@ namespace FirstAPI.Services
             return dish.Id;
         }
 
+        public void Delete(int dishId, int restaurantId)
+        {
+            var restaurant = _dbContext.Restaurants
+                .Include(r => r.Dishes)
+                .FirstOrDefault(r => r.Id == restaurantId);
+
+            TryNotFoundExceptionIfNull(restaurant, "Restaurant not found");
+
+            var dish = restaurant.Dishes.FirstOrDefault(p => p.Id == dishId);
+
+            TryNotFoundExceptionIfNull(dish, "Dish not found");
+
+            _dbContext.Dishes.Remove(dish);
+            _dbContext.SaveChanges();
+        }
+
         public IEnumerable<DishDto> GetAll(int restaurantId)
         {
             Restaurant restaurant = GetRestaurantById(restaurantId);
+
+            TryNotFoundExceptionIfNull(restaurant, "Restaurant not found");
 
             List<DishDto> dtos = _mapper.Map<List<DishDto>>(restaurant.Dishes);
 
@@ -54,6 +73,8 @@ namespace FirstAPI.Services
         public DishDto GetById(int id, int restaurantId)
         {
             Restaurant restaurant = GetRestaurantById(restaurantId);
+
+            TryNotFoundExceptionIfNull(restaurant, "Restaurant not found");
 
             Dish dish = restaurant.Dishes.FirstOrDefault(r => r.Id == id);
             DishDto dto = _mapper.Map<DishDto>(dish);
@@ -65,8 +86,7 @@ namespace FirstAPI.Services
         {
             var dish = _dbContext.Dishes.FirstOrDefault(r => r.Id == dishId);
 
-            if (dish is null)
-                throw new NotFoundException("dish not found");
+            TryNotFoundExceptionIfNull(dish, "Dish not found");
 
             dish.Name = dto.Name;
             dish.Description = dto.Description;
@@ -82,6 +102,12 @@ namespace FirstAPI.Services
                 .FirstOrDefault(r => r.Id == id);
 
             return restaurant;
+        }
+
+        private void TryNotFoundExceptionIfNull(object obj, string message)
+        {
+            if (obj is null)
+                throw new NotFoundException(message);
         }
     }
 }

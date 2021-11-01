@@ -42,9 +42,16 @@ namespace FirstAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult Update([FromRoute] int dishId, [FromRoute] int restaurantId, [FromBody] CreateDishDto dto)
+        public ActionResult Update([FromRoute] int id, [FromRoute] int restaurantId, [FromBody] CreateDishDto dto)
         {
-            _dishService.Update(dto, restaurantId, dishId);
+            _dishService.Update(dto, restaurantId, id);
+            return Ok();
+        }
+
+        [HttpDelete("{id}")]
+        public ActionResult Delete([FromRoute] int id, [FromRoute] int restaurantId)
+        {
+            _dishService.Delete(id, restaurantId);
             return Ok();
         }
     }
